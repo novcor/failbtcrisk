@@ -61,3 +61,24 @@ ul {
   list-style-type: disc;
   padding-left: 20px;
 }
+/* Risk Level Colors */
+.risk-low {
+  color: #2ea043; /* green */
+  font-weight: bold;
+}
+
+.risk-moderate {
+  color: #e3b341; /* yellow */
+  font-weight: bold;
+}
+
+.risk-high {
+  color: #f85149; /* red */
+  font-weight: bold;
+}
+
+.recommendations {
+  margin-top: 10px;
+  color: #c9d1d9;
+  font-style: italic;
+}
