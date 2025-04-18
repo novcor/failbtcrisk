@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RiskBTC – Bitcoin Wallet Risk Check</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>RiskBTC</h1>
+  <p>Assess the risk of any Bitcoin address based on known behavior, usage, and patterns.</p>
+
+  <div class="input-container">
+    <input type="text" id="btcAddress" placeholder="Enter a Bitcoin address..." />
+    <button onclick="assessRisk()">Assess Risk</button>
+  </div>
+
+  <div id="results" class="hidden">
+    <h2>Risk Assessment</h2>
+    <p id="score"></p>
+    <ul id="reasons"></ul>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
+
