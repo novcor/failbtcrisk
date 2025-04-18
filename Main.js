@@ -1,35 +1,52 @@
-function assessRisk() {
-  const address = document.getElementById("btcAddress").value.trim();
-  const results = document.getElementById("results");
-  const score = document.getElementById("score");
-  const reasons = document.getElementById("reasons");
+async function analyzeAddress(address) {
+  let score = 0;
+  let reasons = [];
 
-  if (!address) {
-    alert("Please enter a Bitcoin address.");
-    return;
-  }
-
-  // Dummy logic (real scoring comes later!)
-  let riskScore = "Moderate";
-  let findings = [
-    "No direct matches in compromised address lists.",
-    "Address appears reused in multiple transactions.",
-    "No known darknet association (based on public heuristics)."
-  ];
-
+  // === Legacy address format
   if (address.startsWith("1")) {
-    riskScore = "High";
-    findings.push("Legacy address format (P2PKH) more likely to be reused.");
+    score += 2;
+    reasons.push("Legacy P2PKH address format (more likely reused or exposed).");
   }
 
-  // Output the results
-  score.textContent = `Risk Level: ${riskScore}`;
-  reasons.innerHTML = "";
-  findings.forEach(reason => {
-    const li = document.createElement("li");
-    li.textContent = reason;
-    reasons.appendChild(li);
-  });
+  // === Address format validation
+  const base58Pattern = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+  if (!base58Pattern.test(address)) {
+    score += 1;
+    reasons.push("Address format is non-standard or may use weak entropy.");
+  }
 
-  results.classList.remove("hidden");
+  // === Call Blockstream API
+  try {
+    const response = await fetch(`https://blockstream.info/api/address/${address}`);
+    if (!response.ok) throw new Error("API request failed");
+    const data = await response.json();
+
+    const txCount = data.chain_stats.tx_count || 0;
+
+    if (txCount < 3) {
+      score += 1;
+      reasons.push(`Low transaction activity (${txCount} txs) – possibly burner or attack wallet.`);
+    } else if (txCount > 10) {
+      score += 2;
+      reasons.push(`High reuse detected (${txCount} txs).`);
+    }
+
+    const balance = data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
+    if (balance === 0) {
+      reasons.push("Address has no remaining balance. Possibly emptied or inactive.");
+    }
+
+  } catch (err) {
+    score += 1;
+    reasons.push("Unable to fetch real blockchain data – fallback risk assumed.");
+    console.error(err);
+  }
+
+  // === Final Risk Score
+  let level = "Low";
+  if (score >= 3 && score < 6) level = "Moderate";
+  else if (score >= 6 && score < 9) level = "High";
+  else if (score >= 9) level = "Critical";
+
+  return { level, reasons };
 }
