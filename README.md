@@ -11,6 +11,7 @@ Built by [novcor](https://github.com/novcor) – the union of **Nova** and **Cor
 RiskBTC is a free and private browser-based Bitcoin wallet scanner that gives users a basic **risk rating** for any Bitcoin address, based on public heuristics and behavior patterns.
 
 It’s fast, beginner-friendly, and designed to help you spot red flags before sending funds.
+it also assessess a wallet assessment to check for common exploits used in hacking wallets. 
 
 ---
 
